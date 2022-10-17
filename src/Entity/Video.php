@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\VideoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: VideoRepository::class)]
 
 #[ORM\HasLifecycleCallbacks]
+#[ApiResource()]
 class Video
 {
     #[ORM\Id]
@@ -30,6 +32,10 @@ class Video
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'videos')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -103,5 +109,17 @@ class Video
             $this->setCreatedAt(new \DateTimeImmutable);
         }
         $this->setUpdatedAt(new \DateTimeImmutable);
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }
